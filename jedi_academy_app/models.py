@@ -1,7 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
-from django.db.models.signals import m2m_changed
-from django.core.exceptions import ValidationError
 
 
 class Planet(models.Model):
