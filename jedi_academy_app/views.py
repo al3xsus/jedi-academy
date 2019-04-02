@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404, get_list_or_40
 from django.views.generic import TemplateView
 from django.forms import ModelForm
 from django.core.mail import send_mail
+from jedi_academy.settings import EMAIL_MAIN
 
 
 from .models import Jedi, Candidate, Trial, Answers, Students
@@ -33,14 +34,19 @@ def candidate_create(request, template_name='candidate.html'):
             new_candidate = form.save()
             return redirect("/candidate/{0}".format(new_candidate.pk))
         except:
-            return redirect('index')
+            return render(request, 'error.html', {'text': 'Не удалось создать кандидата', 'code': 500})
     return render(request, template_name, {'form': form})
 
 
 def candidate_testing(request, pk, template_name='candidate_test.html'):
     form = AnswersForm(request.POST or None)
-    candidate = get_object_or_404(Candidate, pk=pk)
-    testing = get_list_or_404(Trial)
+    if not Candidate.objects.filter(pk=pk).exists():
+        return render(request, 'error.html', {'text': 'Нет кандидата с id {}'.format(pk), 'code': 500})
+    candidate = Candidate.objects.get(pk=pk)
+    testing = list(Trial.objects.all())
+    if not testing:
+        return render(request, 'error.html', {'text': 'Нет теста для кандидата', 'code': 500})
+    # testing = get_list_or_404(Trial)
     testing = testing[0]
     data = {'candidate': candidate, 'testing': testing, 'form': form}
     if form.is_valid():
@@ -48,7 +54,7 @@ def candidate_testing(request, pk, template_name='candidate_test.html'):
             answers_new_instance = Answers(candidate_id=pk, trial_id=testing.pk, **form.cleaned_data)
             answers_new_instance.save()
         except:
-            pass
+            return render(request, 'error.html', {'text': 'Не удалось создать объект Answers', 'code': 500})
         finally:
             return redirect('index')
     return render(request, template_name, data)
@@ -69,7 +75,9 @@ class StudentsForm(ModelForm):
 
 
 def jedi_list(request, template_name='jedi.html'):
-    jedi_list_raw = get_list_or_404(Jedi)
+    jedi_list_raw = list(Jedi.objects.all())
+    if not jedi_list_raw:
+        return render(request, 'error.html', {'text': 'Нет джедаев', 'code': 500})
     object_list = []
     for jedi in jedi_list_raw:
         if Students.objects.filter(jedi_id=jedi.pk).exists():
@@ -82,12 +90,17 @@ def jedi_list(request, template_name='jedi.html'):
 
 
 def jedi_choose_padawan(request, pk, template_name='jedi_padawan.html'):
-    jedi = get_object_or_404(Jedi, pk=pk)
-    candidates = get_list_or_404(Candidate, planet=jedi.planet)
-    padawans = get_object_or_404(Students, jedi_id=jedi.pk)
+    if not Jedi.objects.filter(pk=pk).exists():
+        return render(request, 'error.html', {'text': 'Нет джедая с id {}'.format(pk), 'code': 500})
+    jedi = Jedi.objects.get(pk=pk)
+    candidates = list(Candidate.objects.filter(planet=jedi.planet))
+    if not candidates:
+        return render(request, 'error.html', {'text': 'Нет кандидатов для такой планеты', 'code': 500})
     padawans_updated = []
-    for padawan in padawans.padawans.all():
-        padawans_updated.append(padawan.name)
+    if Students.objects.filter(jedi_id=jedi.pk).exists():
+        padawans = Students.objects.get(jedi_id=jedi.pk)
+        for padawan in padawans.padawans.all():
+            padawans_updated.append(padawan.name)
     candidates_updated = []
     buff = {}
     for candidate in candidates:
@@ -101,8 +114,12 @@ def jedi_choose_padawan(request, pk, template_name='jedi_padawan.html'):
 
 
 def padawan_changing(request, pk_jedi, pk_padawan):
-    jedi = get_object_or_404(Jedi, pk=pk_jedi)
-    candidate = get_object_or_404(Candidate, pk=pk_padawan)
+    if not Jedi.objects.filter(pk=pk_jedi).exists():
+        return render(request, 'error.html', {'text': 'Нет джедая с id {}'.format(pk_jedi), 'code': 500})
+    jedi = Jedi.objects.get(pk=pk_jedi)
+    if not Candidate.objects.filter(pk=pk_padawan).exists():
+        return render(request, 'error.html', {'text': 'Нет кандидата с id {}'.format(pk_jedi), 'code': 500})
+    candidate = Candidate.objects.get(pk=pk_padawan)
     try:
         if Students.objects.filter(jedi_id=pk_jedi).exists():
             future_jedi = Students.objects.get(jedi_id=pk_jedi)
@@ -114,7 +131,7 @@ def padawan_changing(request, pk_jedi, pk_padawan):
                     send_mail(
                         'Зачисление в падаваны',
                         'Поздравляем, {}! Джедай {} готов принять Вас в падаваны.'.format(candidate.name, jedi.name),
-                        'from@jedi_academy.com',
+                        EMAIL_MAIN,
                         [candidate.email],
                         fail_silently=False,
                     )
@@ -127,13 +144,12 @@ def padawan_changing(request, pk_jedi, pk_padawan):
             send_mail(
                 'Зачисление в падаваны',
                 'Поздравляем, {}! Джедай {} готов принять Вас в падаваны.'.format(candidate.name, jedi.name),
-                'from@jedi_academy.com',
+                EMAIL_MAIN,
                 [candidate.email],
                 fail_silently=False,
             )
         future_jedi.save()
-    except Exception as e:
-        print(e)
-        pass
+    except:
+        return render(request, 'error.html', {'text': 'Не удалось изменить падаванов', 'code': 500})
     finally:
         return redirect("/jedi/{0}".format(pk_jedi))
