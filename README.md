@@ -32,7 +32,19 @@
 Главная страница
 
 ![Главная страница](screenshots/screenshot_main.png?raw=true "Главная страница")
+
+Создание кандидата
+
 ![Создание кандидата](screenshots/screenshot_candidate.png?raw=true "Создание кандидата")
+
+Тестирование
+
 ![Тестирование](screenshots/screenshot_testing.png?raw=true "Тестирование")
+
+Список джедаев
+
 ![Список джедаев](screenshots/screenshot_jedi.png?raw=true "Список джедаев")
+
+Кандидаты в падаваны
+
 ![Кандидаты в падаваны](screenshots/screenshot_jedi_padawan.png?raw=true "Кандидаты в падаваны")
