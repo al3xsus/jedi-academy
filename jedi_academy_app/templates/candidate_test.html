@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Jedi Academy</title>
+        <meta charset="utf-8">
+        {% load staticfiles %}
+        <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <section class="star-wars-content">
+            <p>
+                <strong>Тестирование кандидата {{candidate.name}} </strong>
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <table class="super-table">
+                  <tr>
+                    <td>{{testing.question1}}</td>
+                    <td>
+                        <label class="switch">
+                            <input id="answer1" type="checkbox" name="answer1">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{{testing.question2}}</td>
+                    <td>
+                        <label class="switch">
+                            <input id="answer2" type="checkbox" name="answer2">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{{testing.question3}}</td>
+                    <td>
+                        <label class="switch">
+                            <input id="answer3" type="checkbox" name="answer3">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                  </tr>
+                </table>
+                <br/>
+                <input type="submit" value="Сохранить" class="button-green" />
+            </form>
+        </section>
+    </body>
+</html>

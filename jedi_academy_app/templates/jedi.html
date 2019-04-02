@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Jedi Academy</title>
+        <meta charset="utf-8">
+        {% load staticfiles %}
+        <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <section class="star-wars-content">
+            <p>
+                <strong>Джедай</strong>
+            </p>
+            <table border="1" class="super-table">
+                <tr>
+                    <th>Джедай</th>
+                    <th>Планета</th>
+                    <th>Количество падаванов</th>
+                    <th>Перейти</th>
+                </tr>
+                {% for jedi in object_list %}
+                <tr>
+                    <td>{{ jedi.name }}</td>
+                    <td>{{ jedi.planet }}</td>
+                    <td>{{ jedi.padawans_count }}</td>
+                    <td> <input type="button" onclick="location.href='/jedi/{{ jedi.pk }}';" value="Перейти" class="button-green"/> </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <br/>
+            <input type="button" onclick="location.href='/';" value="Домой" class="button-blue"/>
+        </section>
+    </body>
+</html>

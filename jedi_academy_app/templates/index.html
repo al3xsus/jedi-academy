@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Jedi Academy</title>
+        <meta charset="utf-8">
+        {% load staticfiles %}
+        <link rel="stylesheet" href="{% static 'css/index.css' %}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <section class="star-wars-content">
+            <p>
+                <strong>ДОБРО ПОЖАЛОВАТЬ В АКАДЕМИЮ ДЖЕДАЕВ. ВЫБЕРИ СВОЙ ПУТЬ.</strong>
+            </p>
+            <div class="row">
+                <div class="column">
+                    <a href="/candidate/">
+                        <div class="card">
+                        <p><i class="fa fa-user fa-3x" aria-hidden="true"></i></p>
+                        <h3>Кандидат</h3>
+                    </div>
+                    </a>
+                </div>
+                <div class="column">
+                    <a href="/jedi/">
+                        <div class="card">
+                        <p><i class="fa fa-user-circle-o fa-3x" aria-hidden="true"></i></p>
+                        <h3>Джедай</h3>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <section class="star-wars-animation">
+            <canvas id="c"></canvas>
+            <script>
+                window.b = document.body;
+                window.a = document.getElementsByTagName('canvas')[0];
+                window.c = window.a.getContext('2d');
+                window.d = document;
+                window.a.width = document.body.clientWidth * 0.5;
+                document.body.clientWidth;
+            </script>
+            <script src="{% static 'js/index.js' %}"></script>
+        </section>
+    </body>
+</html>
