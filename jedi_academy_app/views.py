@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
-from django.views.generic import TemplateView
-from django.forms import ModelForm
 from django.core.mail import send_mail
+from django.forms import ModelForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import TemplateView
+
 from jedi_academy.settings import EMAIL_MAIN
-
-
 from .models import Jedi, Candidate, Trial, Answers, Students
 
 
@@ -74,7 +73,13 @@ class StudentsForm(ModelForm):
         fields = ['padawans']
 
 
-def jedi_list(request, template_name='jedi.html'):
+def jedi_list(request, filter_param=None, template_name='jedi.html'):
+    if filter_param is not None:
+        if filter_param.isnumeric():
+            return jedi_choose_padawan(request, filter_param)
+        else:
+            if filter_param != 'all' and filter_param != 'manypad':
+                return render(request, 'error.html', {'text': 'Некорректные параметры в строке запроса', 'code': 400})
     jedi_list_raw = list(Jedi.objects.all())
     if not jedi_list_raw:
         return render(request, 'error.html', {'text': 'Нет джедаев', 'code': 500})
@@ -85,6 +90,12 @@ def jedi_list(request, template_name='jedi.html'):
             object_list.append({'name': jedi.name, 'planet': jedi.planet, 'pk': jedi.pk, 'padawans_count': students.padawans.count()})
         else:
             object_list.append({'name': jedi.name, 'planet': jedi.planet, 'pk': jedi.pk, 'padawans_count': 0})
+    if filter_param is not None and filter_param == 'manypad':
+        object_list_updated = []
+        for obj in object_list:
+            if obj['padawans_count'] > 1:
+                object_list_updated.append(obj)
+        object_list = object_list_updated
     data = {'object_list': object_list}
     return render(request, template_name, data)
 
